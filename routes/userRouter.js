@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
         if (!user)
             return res
             .status(400)
-            .json({msg: "No account with this email has been registered."});
+            .json({msg: "Account does not exist."});
 
         const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch)
@@ -79,7 +79,6 @@ router.post("/login", async (req, res) => {
             user: {
                 id: user._id,
                 displayName: user.displayName,
-                email: user.email,
             },
         });
 
@@ -115,6 +114,14 @@ router.post("/tokenIsValid", async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+router.get("/", auth, async (req, res) => {
+    const user = await User.findById(req.user);
+    res.json({
+        displayName: user.displayName,
+        id: user._id,
+    });
 });
 
 module.exports = router;
